@@ -1,5 +1,5 @@
 # Airbnb
-[Kaggle - Predict in which country a new user's first booking destination will be] (https://www.kaggle.com/c/airbnb-recruiting-new-user-bookings) - 18th place solution
+[Kaggle - Where will a new guest book their first travel experience?] (https://www.kaggle.com/c/airbnb-recruiting-new-user-bookings) - 18th place solution
 
 ## Introduction
 The goal of this competition was to predict which in country a new user's first booking destination will be, using signup, session and demographic information.
