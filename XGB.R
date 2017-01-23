@@ -4,7 +4,6 @@
 
 #Load required libraries
 library(data.table)
-library()
 library(tidyr)
 library(bit64)
 library(Matrix)
@@ -38,12 +37,12 @@ train[, date_first_active := paste(substr(timestamp_first_active, 0, 4), substr(
 test[, date_first_active := paste(substr(timestamp_first_active, 0, 4), substr(timestamp_first_active, 5, 6),
                           substr(timestamp_first_active, 7, 8), sep="-")]
 
+#No session data before 2014-01-01 - remove this training data
+train = train[date_first_active >= 20140101000000]
+
 #Convert to date
 train[, date_first_active := as.Date(date_first_active)]
 test[, date_first_active := as.Date(date_first_active)]
-
-#No session data before 2014-01-01 - remove this training data
-train = train[date_first_active >= 20140101000000]
 
 #Add country_destination in order to combine training and testing data
 test[, country_destination := "Test"]
@@ -71,12 +70,15 @@ rm(user_actions, user_action_details)
 data[is.na(data)] = -999
 
 #Observe age distribution
-hist(data$age)
-summary(data$age)
+hist(data[, age])
+summary(data[, age])
 
 #Clean age
 data[, age := ifelse(age < 15, -1, age)]
 data[, age := ifelse(age > 104, -1, age)]
+
+#Observe age distribution again
+hist(data[, age])
 
 #Convert data types
 data[, date_account_created := as.Date(date_account_created)]
@@ -100,6 +102,9 @@ data[, c("date_account_created", "date_first_active", "timestamp_first_active", 
 
 #Set NAs to missing value
 data[is.na(data)] = -999
+
+#Make valid variable names
+names(data) = make.names(names(data))
 
 #Sparsify data
 data = sparse.model.matrix(~. -1, data)
@@ -145,7 +150,7 @@ param = list(objective = "multi:softprob",
 )
 
 #Create xgb.DMatrix for xgboost
-dtrain = xgb.DMatrix(data=data.matrix(train), label=train_country_destination, missing=-1)
+dtrain = xgb.DMatrix(data=data.matrix(train), label=train_country_destination, missing = -999)
 
 #Set early.stop.round for xgboost
 early.stop.round = 30
@@ -162,9 +167,6 @@ XGBcv = xgb.cv(params = param,
                 maximize = T,
                 prediction = T
 )
-
-# PredTrain = XGBcv$pred
-# write.csv(PredTrain, "XGB3PredTrain1.csv", quote=F, row.names=F)
 
 #Extract nrounds of best iteration
 nrounds = length(XGBcv$dt$test.ndcg5.mean) - early.stop.round
@@ -183,7 +185,7 @@ Importance = xgb.importance(trainNames, model = XGB)
 xgb.plot.importance(Importance[1:10,])
 
 #Predict on test set
-PredTest = predict(XGB, data.matrix(test[,trainNames]), missing=-1)
+PredTest = predict(XGB, data.matrix(test[,trainNames]), missing = -999)
 
 #Reshape predictions
 Predictions = as.data.frame(matrix(PredTest, nrow=12))
