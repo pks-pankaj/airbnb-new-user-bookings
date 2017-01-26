@@ -73,9 +73,9 @@ data[is.na(data)] = -999
 hist(data[, age])
 summary(data[, age])
 
-#Clean age
-data[, age := ifelse(age < 15, -1, age)]
-data[, age := ifelse(age > 104, -1, age)]
+#Clean age - set to missing value
+data[, age := ifelse(age < 15, -999, age)]
+data[, age := ifelse(age > 104, -999, age)]
 
 #Observe age distribution again
 hist(data[, age])
