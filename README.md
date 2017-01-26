@@ -6,7 +6,7 @@ The goal of this competition was to predict which in country a new user's first 
 All of the users in the dataset are from the USA, with 12 possible outcomes for the destination country.
 The training and test sets are split by dates.
 <br><br>
-The evaluation metric for this competition was [mean average precision @ 5] (https://www.kaggle.com/c/airbnb-recruiting-new-user-bookings/details/evaluation).
+The evaluation metric for this competition was [normalised discounted cumulative gain @ 5] (https://www.kaggle.com/c/airbnb-recruiting-new-user-bookings/details/evaluation).
 
 ## Performance
 The solution obtained a rank of [18th out of 1462 entries] (https://www.kaggle.com/c/airbnb-recruiting-new-user-bookings/leaderboard/private)
